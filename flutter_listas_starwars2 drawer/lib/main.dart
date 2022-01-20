@@ -80,9 +80,12 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Colors.black,
               ),
-              child: Text('Menu'),
+              child: Text(
+                'Menu',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
             ListTile(
               title: const Text('Personajes'),
@@ -117,21 +120,27 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          FutureBuilder<List<People>>(
-            future: items,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return _peopleList(snapshot.data!);
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
+      body: Container(
+        color: Colors.black,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 50),
+          child: Column(
+            children: [
+              FutureBuilder<List<People>>(
+                future: items,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return _peopleList(snapshot.data!);
+                  } else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
+                  }
 
-              return const Center(child: CircularProgressIndicator());
-            },
+                  return const Center(child: CircularProgressIndicator());
+                },
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -160,32 +169,62 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _peopleItem(People people, int index) {
-    return Container(
-        margin: const EdgeInsets.symmetric(vertical: 20.0),
-        width: 150,
-        child: Card(
-          child: InkWell(
-            splashColor: Colors.red.withAlpha(30),
-            onTap: () {
-              debugPrint('Card tapped.');
-            },
-            child: SizedBox(
-              width: 300,
-              height: 150,
-              child: Column(
-                children: [
-                  Text(people.name),
-                  Image.network(
-                    'https://starwars-visualguide.com/assets/img/characters/' +
-                        (index + 1).toString() +
-                        '.jpg',
-                    width: 100,
-                  )
-                ],
+    String personId = people.url.split('/')[5];
+    String personName = people.name;
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return DetailScreen(id: personId);
+        }));
+      },
+      child: Container(
+          width: 200,
+          height: 250,
+          margin:
+              EdgeInsets.only(left: index == 0 ? 20 : 5, right: 5, bottom: 10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            border: Border.all(color: Colors.yellow.withOpacity(0.5), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.yellow.withOpacity(0.5),
+                spreadRadius: 1,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
               ),
-            ),
+            ],
           ),
-        ));
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  child: Hero(
+                      tag: 'people',
+                      child: Image.network(
+                          'http://starwars-visualguide.com/assets/img/characters/$personId.jpg',
+                          width: 200,
+                          fit: BoxFit.cover))),
+              Positioned(
+                  bottom: 0,
+                  left: 0,
+                  child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10)),
+                      child: Container(
+                          color: Colors.white.withOpacity(0.7),
+                          width: 200,
+                          height: 50,
+                          alignment: Alignment.center,
+                          child: Text(
+                            personName,
+                            style: const TextStyle(fontFamily: 'Jedi'),
+                          ))))
+            ],
+          )),
+    );
   }
 }
 
@@ -284,35 +323,47 @@ class _MyHomePageState2 extends State<MyHomePage2> {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          FutureBuilder<List<Planetas>>(
-            future: itemsPlanets,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return _planetsList(snapshot.data!);
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
+      body: Container(
+        color: Colors.black87,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 50),
+          child: Column(
+            children: [
+              FutureBuilder<List<Planetas>>(
+                future: itemsPlanets,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return _planetsList(snapshot.data!);
+                  } else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
+                  }
 
-              return const Center(child: CircularProgressIndicator());
-            },
-          )
-        ],
+                  return const Center(child: CircularProgressIndicator());
+                },
+              )
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Widget _getPlanetImg(int index, String name) {
     if (name == 'Tatooine') {
-      return Image.network(
-          'https://static.wikia.nocookie.net/esstarwars/images/b/b0/Tatooine_TPM.png/revision/latest?cb=20131214162357');
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 25),
+        child: Image.network(
+            'https://static.wikia.nocookie.net/esstarwars/images/b/b0/Tatooine_TPM.png/revision/latest?cb=20131214162357'),
+      );
     } else {
-      return Image.network(
-          'https://starwars-visualguide.com/assets/img/planets/' +
-              (index + 1).toString() +
-              '.jpg',
-          width: 100);
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 25),
+        child: Image.network(
+            'https://starwars-visualguide.com/assets/img/planets/' +
+                (index + 1).toString() +
+                '.jpg',
+            width: 150),
+      );
     }
   }
 
@@ -341,7 +392,7 @@ class _MyHomePageState2 extends State<MyHomePage2> {
 
   Widget _planetItem(Planetas planet, int index) {
     return Container(
-        margin: const EdgeInsets.symmetric(vertical: 20.0),
+        margin: const EdgeInsets.only(left: 10, bottom: 10),
         width: 150,
         child: Card(
           child: InkWell(
@@ -365,4 +416,28 @@ class _MyHomePageState2 extends State<MyHomePage2> {
 
   @override
   noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class DetailScreen extends StatelessWidget {
+  final String id;
+  const DetailScreen({Key? key, required this.id}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+        },
+        child: Center(
+          child: Hero(
+            tag: 'people',
+            child: Image.network(
+              'http://starwars-visualguide.com/assets/img/characters/$id.jpg',
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
